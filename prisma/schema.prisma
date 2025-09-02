@@ -1,0 +1,286 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  EMPLOYEE
+  SUPERVISOR
+  HR
+  ADMIN
+}
+
+enum ReviewPhase {
+  NOT_STARTED
+  SELF_EVALUATION
+  SUPERVISOR_EVALUATION
+  FINAL_MEETING
+  COMPLETED
+}
+
+enum CompetencyType {
+  DOSTARCZANIE
+  ROZWOJ
+  INNOWACYJNOSC
+  ODWAGA
+  ODPORNOSC
+}
+
+enum ReviewPeriodType {
+  MID_YEAR
+  END_YEAR
+}
+
+enum ReviewPeriodStatus {
+  PLANNED
+  OPEN
+  CLOSED
+  ARCHIVED
+}
+
+enum AuthProvider {
+  LOCAL
+  ACTIVE_DIRECTORY
+  SAML
+  OAUTH
+}
+
+model ReviewPeriod {
+  id                String             @id @default(cuid())
+  year              Int
+  type              ReviewPeriodType   // MID_YEAR or END_YEAR
+  status            ReviewPeriodStatus @default(PLANNED)
+  
+  // Period dates
+  startDate         DateTime
+  endDate           DateTime
+  
+  // Admin management
+  openedBy          String?
+  openedAt          DateTime?
+  closedBy          String?
+  closedAt          DateTime?
+  
+  // Related reviews
+  reviews           Review[]
+  
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  @@unique([year, type])
+}
+
+model User {
+  id                String     @id @default(cuid())
+  email             String     @unique
+  password          String?    // Nullable for SSO/AD users
+  firstName         String
+  lastName          String
+  employeeId        String     @unique
+  department        String?
+  position          String?
+  role              Role       @default(EMPLOYEE)
+  isActive          Boolean    @default(true)
+  
+  // Authentication provider
+  authProvider      AuthProvider @default(LOCAL)
+  externalId        String?    // ID from external auth provider (AD, SSO)
+  lastLogin         DateTime?
+  
+  // Role assignment tracking
+  roleAssignedBy    String?
+  roleAssignedById  String?
+  roleAssignedAt    DateTime?
+  
+  // Hierarchical relationship
+  supervisorId      String?
+  supervisor        User?      @relation("SupervisorRelation", fields: [supervisorId], references: [id])
+  subordinates      User[]     @relation("SupervisorRelation")
+  
+  // Reviews where user is the employee
+  reviewsAsEmployee Review[]   @relation("EmployeeReviews")
+  
+  // Reviews where user is the supervisor
+  reviewsAsSupervisor Review[] @relation("SupervisorReviews")
+  
+  // Audit logs
+  auditLogs         AuditLog[]
+  
+  // Login attempts
+  loginAttempts     LoginAttempt[]
+  
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  
+  @@index([externalId, authProvider])
+}
+
+model Review {
+  id                   String       @id @default(cuid())
+  
+  // Link to review period
+  reviewPeriodId       String
+  reviewPeriod         ReviewPeriod @relation(fields: [reviewPeriodId], references: [id])
+  
+  employeeId           String
+  employee             User         @relation("EmployeeReviews", fields: [employeeId], references: [id])
+  
+  supervisorId         String
+  supervisor           User         @relation("SupervisorReviews", fields: [supervisorId], references: [id])
+  
+  phase                ReviewPhase  @default(NOT_STARTED)
+  isArchived           Boolean      @default(false)
+  
+  // Phase timestamps
+  selfEvalStartedAt    DateTime?
+  selfEvalCompletedAt  DateTime?
+  supEvalStartedAt     DateTime?
+  supEvalCompletedAt   DateTime?
+  finalMeetingAt       DateTime?
+  completedAt          DateTime?
+  
+  // Summary
+  summary              String?      @default("")
+  
+  // Relations
+  goals                Goal[]
+  competencies         Competency[]
+  developmentPlan      DevelopmentPlan?
+  
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+  
+  @@unique([employeeId, reviewPeriodId])
+}
+
+model Goal {
+  id                   String    @id @default(cuid())
+  reviewId             String
+  review               Review    @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  
+  title                String
+  description          String
+  
+  // Scores
+  selfScore            Int?      // 1-5 scale
+  supervisorScore      Int?      // 1-5 scale
+  finalScore           Int?      // 1-5 scale, agreed upon
+  
+  // Comments
+  selfComment          String?
+  supervisorComment    String?
+  
+  orderIndex           Int       @default(0)
+  
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+}
+
+model Competency {
+  id                   String         @id @default(cuid())
+  reviewId             String
+  review               Review         @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  
+  type                 CompetencyType
+  
+  // Scores
+  selfScore            Int?           // 1-5 scale
+  supervisorScore      Int?           // 1-5 scale
+  finalScore           Int?           // 1-5 scale, agreed upon
+  
+  // Comments
+  selfComment          String?
+  supervisorComment    String?
+  
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  
+  @@unique([reviewId, type])
+}
+
+model DevelopmentPlan {
+  id                   String              @id @default(cuid())
+  reviewId             String              @unique
+  review               Review              @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  
+  items                DevelopmentItem[]
+  
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+}
+
+model DevelopmentItem {
+  id                   String              @id @default(cuid())
+  developmentPlanId    String
+  developmentPlan      DevelopmentPlan     @relation(fields: [developmentPlanId], references: [id], onDelete: Cascade)
+  
+  competencyType       CompetencyType
+  action               String
+  expectedOutcome      String?
+  deadline             DateTime?
+  
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+}
+
+model EmailNotification {
+  id                   String              @id @default(cuid())
+  userId               String
+  reviewId             String
+  type                 String              // PHASE_TRANSITION, REMINDER, etc.
+  subject              String
+  body                 String
+  sent                 Boolean             @default(false)
+  sentAt               DateTime?
+  error                String?
+  
+  createdAt            DateTime            @default(now())
+}
+
+model AuditLog {
+  id                   String              @id @default(cuid())
+  userId               String
+  user                 User                @relation(fields: [userId], references: [id])
+  action               String              // LOGIN, LOGOUT, ROLE_CHANGE, etc.
+  entityType           String?             // USER, REVIEW, etc.
+  entityId             String?
+  details              String?             // JSON string with additional details
+  ipAddress            String?
+  userAgent            String?
+  
+  createdAt            DateTime            @default(now())
+  
+  @@index([userId, action])
+  @@index([entityType, entityId])
+}
+
+model SystemConfiguration {
+  id                   String              @id @default(cuid())
+  key                  String              @unique
+  value                String              // JSON string
+  description          String?
+  category             String              // AUTH, AD, SSO, GENERAL
+  isSecret             Boolean             @default(false)
+  
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  
+  @@index([category])
+}
+
+model LoginAttempt {
+  id                   String              @id @default(cuid())
+  userId               String
+  user                 User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email                String
+  ipAddress            String
+  success              Boolean
+  attemptedAt          DateTime            @default(now())
+  
+  @@index([userId, success])
+  @@index([email, attemptedAt])
+}
