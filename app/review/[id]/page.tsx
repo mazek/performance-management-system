@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
@@ -32,7 +32,7 @@ interface CompetencyConfig {
   type: string
   name: string
   description: string
-  icon: any
+  icon: React.ComponentType
   color: string
 }
 
@@ -54,13 +54,13 @@ export default function ReviewPage() {
   const reviewId = params.id as string
   const { t, language } = useLanguage()
   
-  const [review, setReview] = useState<any>(null)
+  const [review, setReview] = useState<any>(null) // TODO: type this properly
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<any>(null) // TODO: type this properly
   const [goals, setGoals] = useState<Goal[]>([])
-  const [competencies, setCompetencies] = useState<any[]>([])
-  const [developmentPlan, setDevelopmentPlan] = useState<any[]>([])
+  const [competencies, setCompetencies] = useState<any[]>([]) // TODO: type this properly
+  const [developmentPlan, setDevelopmentPlan] = useState<any[]>([]) // TODO: type this properly
   const [summary, setSummary] = useState('')
   const [activeSection, setActiveSection] = useState('goals')
 
@@ -190,7 +190,7 @@ export default function ReviewPage() {
     router.push('/login')
   }
 
-  const updateGoal = (goalId: string, field: string, value: any) => {
+  const updateGoal = (goalId: string, field: string, value: string | number) => {
     setGoals(goals.map(goal => 
       goal.id === goalId ? { ...goal, [field]: value } : goal
     ))
@@ -212,7 +212,7 @@ export default function ReviewPage() {
     setGoals(goals.filter(goal => goal.id !== goalId))
   }
 
-  const updateCompetencyScore = (compId: string, field: string, value: any) => {
+  const updateCompetencyScore = (compId: string, field: string, value: string | number) => {
     setCompetencies(competencies.map(comp => 
       comp.id === compId ? { ...comp, [field]: value } : comp
     ))

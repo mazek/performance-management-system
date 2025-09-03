@@ -29,8 +29,8 @@ export async function GET(request: NextRequest) {
     const format = searchParams.get('format') || 'csv'
 
     // Build filters
-    let reviewFilter: any = {}
-    let userFilter: any = {}
+    const reviewFilter: Record<string, any> = {}
+    const userFilter: Record<string, any> = {}
 
     if (period !== 'all') {
       reviewFilter.reviewPeriodId = period

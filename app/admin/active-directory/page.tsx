@@ -27,7 +27,7 @@ interface SyncResult {
 
 export default function ActiveDirectoryPage() {
   const router = useRouter()
-  const { t } = useLanguage()
+  const { } = useLanguage()
   const [loading, setLoading] = useState(true)
   const [syncing, setSyncing] = useState(false)
   const [adStatus, setADStatus] = useState<ADStatus | null>(null)
@@ -86,7 +86,7 @@ export default function ActiveDirectoryPage() {
       if (data.success) {
         await fetchADStatus() // Refresh status
       }
-    } catch (error) {
+    } catch {
       setSyncResult({
         success: false,
         message: 'Failed to sync with Active Directory'

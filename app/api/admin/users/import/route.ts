@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
         continue
       }
 
-      const userData: any = {}
+      const userData: Record<string, any> = {}
       headers.forEach((header, index) => {
         // Security: Sanitize CSV values to prevent formula injection
         let value = values[index] || null

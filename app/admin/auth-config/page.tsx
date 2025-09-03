@@ -1,25 +1,20 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { AdminLayout } from '@/components/AdminLayout'
 import {
   Shield,
-  Server,
   Cloud,
-  Key,
-  Settings,
   Save,
   AlertCircle,
   CheckCircle,
   Eye,
   EyeOff,
   Globe,
-  Building,
-  Users,
   TestTube,
-  Lock
+  Lock,
+  Building
 } from 'lucide-react'
 
 interface AuthConfig {
@@ -70,8 +65,7 @@ interface AuthConfig {
 }
 
 export default function AuthConfigPage() {
-  const router = useRouter()
-  const { t } = useLanguage()
+  const { } = useLanguage()
   const [config, setConfig] = useState<AuthConfig>({
     local: {
       enabled: true,
@@ -138,7 +132,7 @@ export default function AuthConfigPage() {
         const data = await response.json()
         setConfig(data.config)
       }
-    } catch (error) {
+    } catch {
       console.error('Error fetching auth config:', error)
     } finally {
       setLoading(false)
@@ -164,7 +158,7 @@ export default function AuthConfigPage() {
         const error = await response.json()
         setErrorMessage(error.message || 'Failed to save configuration')
       }
-    } catch (error) {
+    } catch {
       setErrorMessage('Network error occurred')
     } finally {
       setSaving(false)
@@ -189,7 +183,7 @@ export default function AuthConfigPage() {
       } else {
         setErrorMessage(`${provider} test failed: ${result.error}`)
       }
-    } catch (error) {
+    } catch {
       setErrorMessage('Connection test failed')
     } finally {
       setTestingConnection(null)

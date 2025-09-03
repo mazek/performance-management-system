@@ -11,7 +11,7 @@ const roleUpdateSchema = z.object({
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   // Check permission
   const session = await requirePermission(request, Permission.ASSIGN_ROLES);
@@ -20,7 +20,7 @@ export async function PATCH(
   try {
     const body = await request.json();
     const { role } = roleUpdateSchema.parse(body);
-    const targetUserId = params.id;
+    const { id: targetUserId } = await params;
 
     // Get current user role
     const currentUser = await prisma.user.findUnique({

@@ -41,7 +41,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       return NextResponse.json({ error: 'Review period not found' }, { status: 404 })
     }
 
-    let updateData: any = {}
+    let updateData: Record<string, any>
     
     switch (action) {
       case 'open':

@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
     const department = searchParams.get('department') || 'all'
 
     // Build filters
-    let reviewFilter: any = {}
-    let userFilter: any = {}
+    const reviewFilter: Record<string, any> = {}
+    const userFilter: Record<string, any> = {}
 
     if (period !== 'all') {
       reviewFilter.reviewPeriodId = period

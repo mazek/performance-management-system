@@ -6,15 +6,11 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { 
   ArrowLeft,
-  Calendar,
   Play,
   Pause,
   Archive,
   Plus,
   Clock,
-  CheckCircle,
-  AlertCircle,
-  Users,
   BarChart3,
   LogOut
 } from 'lucide-react'
@@ -41,7 +37,7 @@ interface User {
 export default function AdminPage() {
   const router = useRouter()
   const { t } = useLanguage()
-  const [user, setUser] = useState<User | null>(null)
+  const [, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
   const [reviewPeriods, setReviewPeriods] = useState<ReviewPeriod[]>([])
   const [showCreateForm, setShowCreateForm] = useState(false)

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
@@ -71,9 +71,9 @@ export default function ReportsPage() {
   useEffect(() => {
     fetchReportData()
     fetchFilterOptions()
-  }, [selectedPeriod, selectedDepartment])
+  }, [fetchReportData, fetchFilterOptions])
 
-  const fetchReportData = async () => {
+  const fetchReportData = useCallback(async () => {
     try {
       setLoading(true)
       const params = new URLSearchParams({
@@ -91,9 +91,9 @@ export default function ReportsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedPeriod, selectedDepartment])
 
-  const fetchFilterOptions = async () => {
+  const fetchFilterOptions = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/reports/filters')
       if (response.ok) {
@@ -104,7 +104,7 @@ export default function ReportsPage() {
     } catch (error) {
       console.error('Error fetching filter options:', error)
     }
-  }
+  }, [])
 
   const exportReport = async (format: 'csv' | 'pdf') => {
     try {

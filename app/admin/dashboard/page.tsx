@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
@@ -9,16 +9,11 @@ import {
   Users,
   Calendar,
   FileText,
-  TrendingUp,
   Clock,
   CheckCircle,
   AlertCircle,
-  Activity,
   Settings,
-  Archive,
   PieChart,
-  Target,
-  Award,
   Building,
   User,
   LogOut
@@ -71,9 +66,9 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchUserData()
     fetchDashboardStats()
-  }, [])
+  }, [fetchUserData, fetchDashboardStats])
 
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     try {
       const response = await fetch('/api/auth/me')
       if (response.ok) {
@@ -95,9 +90,9 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [router])
 
-  const fetchDashboardStats = async () => {
+  const fetchDashboardStats = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/dashboard-stats')
       if (response.ok) {
@@ -107,21 +102,13 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Error fetching dashboard stats:', error)
     }
-  }
+  }, [])
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' })
     router.push('/login')
   }
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('pl-PL', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    })
-  }
 
   const getCompletionPercentage = (completed: number, total: number) => {
     return total > 0 ? Math.round((completed / total) * 100) : 0
@@ -283,7 +270,7 @@ export default function AdminDashboard() {
               <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
                 <div>
                   <p className="text-sm font-medium text-red-800">Overdue Self-Evaluations</p>
-                  <p className="text-xs text-red-600">Employees who haven't completed their review</p>
+                  <p className="text-xs text-red-600">Employees who haven&apos;t completed their review</p>
                 </div>
                 <span className="text-xl font-bold text-red-700">{stats?.overdueSelfEvaluations || 0}</span>
               </div>

@@ -14,7 +14,7 @@ const loginSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
-  let body: any;
+  let body: Record<string, any>;
   let language: Language = 'pl';
   const { ipAddress } = extractRequestInfo(request);
 
