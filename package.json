@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "prisma generate && next build",
     "build:with-db": "node scripts/build.js",
+    "setup-prod-db": "node scripts/setup-production-db.js",
     "start": "next start",
     "lint": "eslint",
     "seed": "npx tsx prisma/seed.ts",
