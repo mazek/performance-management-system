@@ -2,23 +2,25 @@
 
 ## Vercel Deployment Setup
 
-### 1. Database Setup (Required)
+⚠️ **IMPORTANT**: You must set up the database and environment variables BEFORE deploying, or the build will fail.
+
+### 1. Database Setup (Required First)
 
 Since this application uses a database, you need to set up a PostgreSQL database for production.
 
-**Options:**
-- **Vercel Postgres** (Recommended): Add from the Vercel dashboard
-- **Supabase**: Free PostgreSQL hosting
-- **Railway**: PostgreSQL hosting
+**Recommended: Vercel Postgres**
+1. Go to your Vercel project dashboard
+2. Navigate to the "Storage" tab  
+3. Click "Create Database" → "Postgres"
+4. Choose your plan (Hobby is fine for testing)
+5. This will automatically add the `DATABASE_URL` environment variable
+
+**Alternative Options:**
+- **Supabase**: Free PostgreSQL hosting with generous limits
+- **Railway**: PostgreSQL hosting  
 - **Neon**: Serverless PostgreSQL
 
-#### Using Vercel Postgres (Recommended):
-1. Go to your Vercel project dashboard
-2. Navigate to the "Storage" tab
-3. Click "Add Database" → "Postgres"
-4. This will automatically add the `DATABASE_URL` environment variable
-
-### 2. Environment Variables
+### 2. Environment Variables (Required Before Build)
 
 Set these environment variables in your Vercel project settings:
 
@@ -51,9 +53,32 @@ NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
    - Push database schema (`prisma db push`)
    - Build the Next.js application
 
-### 4. Initial Setup
+### 4. Step-by-Step Deployment Process
 
-After first deployment:
+**Before deploying, follow these steps in order:**
+
+1. **Connect Repository to Vercel**
+   - Go to Vercel dashboard
+   - Import your GitHub repository
+   - **DO NOT deploy yet** - pause the initial build
+
+2. **Set Up Database**
+   - In Vercel project → Storage tab → Create Postgres database
+   - Note: This adds `DATABASE_URL` automatically
+
+3. **Add Environment Variables**
+   - Go to Settings → Environment Variables
+   - Add the required variables listed above
+   - Make sure `DATABASE_URL` is set (should be automatic if using Vercel Postgres)
+
+4. **Deploy**
+   - Go to Deployments tab
+   - Click "Redeploy" or push new commit
+   - Build should now succeed
+
+### 5. Initial Setup
+
+After successful deployment:
 1. Access your application URL
 2. The first user to register will be assigned admin role
 3. Use the admin panel to manage users and review periods
