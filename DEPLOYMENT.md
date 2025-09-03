@@ -74,7 +74,13 @@ NEXT_PUBLIC_APP_URL=https://your-app.vercel.app
 4. **Deploy**
    - Go to Deployments tab
    - Click "Redeploy" or push new commit
-   - Build should now succeed
+   - Build should now succeed (may take a few minutes)
+
+5. **Set up Database Schema** (After first successful build)
+   - Once the app is deployed, you need to create the database tables
+   - Go to your database provider (Vercel Postgres dashboard or Supabase)
+   - Run this command to create tables: `npx prisma db push`
+   - Or use the SQL tab in your database dashboard and run the schema manually
 
 ### 5. Initial Setup
 
@@ -101,14 +107,23 @@ npm run dev
 
 ## Troubleshooting
 
+**Build hangs during "pushing schema" step:**
+- This usually indicates a database connection timeout
+- Cancel the build and ensure your database allows connections from Vercel
+- For Supabase: Check that connection pooling is enabled
+- Try using the simplified build without database push (see above)
+- You can set up tables manually after deployment
+
 **Build fails with Prisma errors:**
 - Ensure `DATABASE_URL` is set in Vercel environment variables
 - Check that the database is accessible from Vercel
 - Verify the PostgreSQL connection string format
+- Make sure the database exists and is reachable
 
 **Database connection issues:**
 - Make sure your database accepts connections from Vercel IPs
 - For external databases, ensure SSL is properly configured
+- For Supabase: Use the connection string with `?pgbouncer=true` for connection pooling
 - Check firewall settings if using self-hosted database
 
 **Environment variables not working:**
