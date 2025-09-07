@@ -82,21 +82,21 @@ Navigate to http://localhost:3000
    - Development plan creation
 
 #### Core Competencies
-- **DOSTARCZANIE** (Delivery) - Achieving goals and tasks
-- **ROZWÓJ** (Development) - Continuous skill improvement
-- **INNOWACYJNOŚĆ** (Innovation) - Creativity and new solutions
-- **ODWAGA** (Courage) - Taking on challenges
-- **ODPORNOŚĆ** (Resilience) - Dealing with difficulties
+- **Delivery** - Achieving goals and tasks
+- **Development** - Continuous skill improvement
+- **Innovation** - Creativity and new solutions
+- **Courage** - Taking on challenges
+- **Resilience** - Dealing with difficulties
 
 #### Grading Scale
-- **5** - Outstanding (Wybitny)
-- **4** - Above expectations (Powyżej oczekiwań)
-- **3** - Solid performer (Solidny wykonawca)
-- **2** - Developing (Rozwija się)
-- **1** - Below expectations (Poniżej oczekiwań)
+- **5** - Outstanding
+- **4** - Above expectations
+- **3** - Solid performer
+- **2** - Developing
+- **1** - Below expectations
 
 ### Multi-Language Support
-- Polish (default) and English
+- English and Polish languages supported
 - Toggle via globe icon in navigation
 - All UI elements fully translated
 - Persistent language preference
