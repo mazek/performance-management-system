@@ -66,7 +66,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchUserData()
     fetchDashboardStats()
-  }, [fetchUserData, fetchDashboardStats])
+  }, [])
 
   const fetchUserData = useCallback(async () => {
     try {
